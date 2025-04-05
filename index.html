@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz ze słówek</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #dbeafe, #f0fdf4);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #1e40af;
+    }
+    #quiz-container {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #1d4ed8;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    #summary {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .correct {
+      color: green;
+    }
+    .wrong {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz ze słówek</h1>
+  <div id="quiz-container">
+    <div class="question" id="question"></div>
+    <form onsubmit="event.preventDefault(); checkAnswer();">
+      <input type="text" id="answer" placeholder="Wpisz tłumaczenie po angielsku" autocomplete="off" />
+      <button type="submit">Sprawdź</button>
+    </form>
+    <div id="feedback"></div>
+  </div>
+  <div id="summary"></div>
+
+  <script>
+    const words = [
+      ["szczodry, hojny", "generous"],
+      ["dziczyzna", "game"],
+      ["klejnot", "jewel"],
+      ["wojownik", "fighter"],
+      ["równość", "equality"],
+      ["ssak", "mammal"],
+      ["jedwab", "silk"],
+      ["były", "former"],
+      ["mieć ochotę", "fancy"],
+      ["mięso mielone", "mince meat"],
+      ["owsianka", "porridge"],
+      ["zainteresowanie", "attention"],
+      ["założyć, ustanowić", "establish"],
+      ["osiedlić się", "to settle"],
+      ["handel, wymiana", "to trade"],
+      ["potomkowie", "descendants"],
+      ["osobno, oddzielnie", "separately"],
+      ["wypuścić", "to release"],
+      ["wraz z", "along with"],
+      ["gospodarz, organizator", "host"],
+      ["być gospodarzem, organizować", "to host"],
+      ["królewski", "royal"],
+      ["plemię", "tribe"],
+      ["powalić, obalić", "bring down"],
+      ["lista wykonawców, obsada", "line up"],
+      ["głuchy", "deaf"],
+      ["błaganie, wołanie, apel", "plea"]
+    ];
+
+    let current = 0;
+    let correct = 0;
+    const userAnswers = [];
+
+    function showQuestion() {
+      document.getElementById("feedback").innerText = "";
+      if (current < words.length) {
+        document.getElementById("question").innerText = `Przetłumacz: ${words[current][0]}`;
+        document.getElementById("answer").value = "";
+        document.getElementById("answer").focus();
+      } else {
+        showSummary();
+      }
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById("answer").value.trim().toLowerCase();
+      const correctAnswer = words[current][1].toLowerCase();
+      const feedback = document.getElementById("feedback");
+      let result;
+
+      if (input === correctAnswer) {
+        correct++;
+        result = `<span class="correct">✅ Poprawnie!</span>`;
+      } else {
+        result = `<span class="wrong">❌ Błąd. Poprawna odpowiedź: ${words[current][1]}</span>`;
+      }
+
+      userAnswers.push({
+        polish: words[current][0],
+        yourAnswer: input,
+        correctAnswer: words[current][1],
+        isCorrect: input === correctAnswer
+      });
+
+      feedback.innerHTML = result;
+      current++;
+      setTimeout(showQuestion, 1500);
+    }
+
+    function showSummary() {
+      const summaryDiv = document.getElementById("summary");
+      let html = `<h2>Podsumowanie</h2>`;
+      html += `<p>Poprawnych odpowiedzi: ${correct} z ${words.length}</p>`;
+      html += `<ul>`;
+      userAnswers.forEach(entry => {
+        html += `<li><strong>${entry.polish}</strong> – Ty: <em>${entry.yourAnswer}</em> / Poprawna: <em>${entry.correctAnswer}</em> ${entry.isCorrect ? '✅' : '❌'}</li>`;
+      });
+      html += `</ul>`;
+      summaryDiv.innerHTML = html;
+      document.getElementById("quiz-container").style.display = "none";
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
+
